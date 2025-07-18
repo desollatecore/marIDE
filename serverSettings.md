@@ -5,7 +5,7 @@ mar-ide/PLUGIN-FOR-LZT
 ---
 # Создание FILEBROWSER для управление файлами на сервере.
 
-Вставляем в linux-terminal
+[LINUX TERMINAL]
 
 1.sudo apt update && sudo apt install curl -y
 
@@ -18,14 +18,14 @@ mar-ide/PLUGIN-FOR-LZT
 ---
 # Как узнать какое айпи в АДМИН-МЕНЮ файловой директории 
 
-Вставляем в linux-terminal
+[LINUX TERMINAL]
 
 curl ifconfig.me
 
 ---
 # Запуск админ панели 
 
-Вставляем в linux-terminal
+[LINUX TERMINAL]
 
 filebrowser -r /srv/files -p 8080 --address 0.0.0.0
 
@@ -33,7 +33,7 @@ filebrowser -r /srv/files -p 8080 --address 0.0.0.0
 
 # Автозапуск Admin-панели Директории 
 
-Вставляем в linux-terminal
+[LINUX TERMINAL]
 
 which filebrowser - покажет путь, где находиться.
 
@@ -43,7 +43,7 @@ sudo nano /etc/systemd/system/filebrowser.service
 
 ---
 
-Вставляем в текстовом редакторе nano/vim:
+[ТЕКСТОВЫЙ РЕДАЕКТОР NANO]
 
 [Unit]
 
@@ -65,6 +65,8 @@ WantedBy=multi-user.target
 
 ---
 Активируем и запускаем:
+
+[LINUX TERMINAL]
 
 sudo systemctl daemon-reload
 
