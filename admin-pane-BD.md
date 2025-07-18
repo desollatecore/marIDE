@@ -1,84 +1,110 @@
-# 📚 Установка pgAdmin (Web-based GUI для PostgreSQL) без Docker
+# Установка и настройка pgAdmin 4 (Web-mode) на Debian/Ubuntu сервере (GCP)
 
-> Актуально для Linux (Debian/Ubuntu)
-
----
-
-## 📦 Установка зависимостей
-
-```bash
-sudo apt update && sudo apt install curl ca-certificates gnupg -y
-```
-
----
-
-## 📥 Добавляем репозиторий pgAdmin
-
-```bash
-curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo gpg --dearmor -o /usr/share/keyrings/pgadmin-keyring.gpg
-```
-
-```bash
-echo "deb [signed-by=/usr/share/keyrings/pgadmin-keyring.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4" | sudo tee /etc/apt/sources.list.d/pgadmin4.list
-```
-
----
-
-## 🔁 Устанавливаем pgAdmin (веб-версия)
+## 📦 Установка pgAdmin 4
 
 ```bash
 sudo apt update
-sudo apt install pgadmin4-web -y
+sudo apt install curl ca-certificates gnupg apache2 -y
+```
+
+Добавляем ключ и репозиторий:
+
+```bash
+curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | gpg --dearmor | sudo tee /usr/share/keyrings/pgadmin-keyring.gpg > /dev/null
+
+echo "deb [signed-by=/usr/share/keyrings/pgadmin-keyring.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/debian $(lsb_release -cs) pgadmin4" | sudo tee /etc/apt/sources.list.d/pgadmin4.list
+
+sudo apt update
+```
+
+Устанавливаем pgAdmin 4 (web + server):
+
+```bash
+sudo apt install pgadmin4-web pgadmin4-server -y
 ```
 
 ---
 
-## ⚙️ Настройка и запуск pgAdmin
+## ⚙️ Настройка pgAdmin 4 в Web-режиме
+
+Запускаем скрипт и указываем email/пароль администратора:
 
 ```bash
 sudo /usr/pgadmin4/bin/setup-web.sh
 ```
 
-> Тут нужно будет вручную ввести:
->
-> - Email (например, `admin@admin.com`)
-> - Пароль (например, `admin123`)
-> - Повторить пароль
+На экране будет запрос:
 
-После успешной настройки будет выведен адрес панели — обычно это:
 ```
-http://localhost/pgadmin4
+Email address: admin@admin.com
+Password: ********
+Retype password: ********
 ```
 
 ---
 
-## 🌐 Как открыть доступ извне (GCP, UFW и т.п.)
+## 🌐 Доступ к веб-интерфейсу
 
-- Если используешь **Google Cloud VM**, добавь правило фаервола для порта `80` (HTTP) — если доступа ещё нет.
-- Если используешь `ufw` (локальный фаервол):
+По умолчанию pgAdmin запускается под **Apache** и доступен по адресу:
 
-```bash
-sudo ufw allow 80
+```
+http://<IP-сервера>/pgadmin4
 ```
 
----
-
-## 🔐 Где лежат данные pgAdmin
-
-Конфиги, логины, сервера — всё в:
-
-```bash
-/var/lib/pgadmin/
-```
-
----
-
-## 🔁 Автозапуск
-
-pgAdmin автоматически запускается как systemd-сервис:
+Проверь статус Apache:
 
 ```bash
 sudo systemctl status apache2
 ```
 
-(Он работает через Apache — pgAdmin4 интегрируется в него как Web App)
+Если не запущен:
+
+```bash
+sudo systemctl start apache2
+sudo systemctl enable apache2
+```
+
+---
+
+## 🔥 Открытие порта в GCP
+
+Перейди в раздел **"VPC Network → Firewall rules"** и создай новое правило:
+
+- Name: `allow-http`
+- Direction: `Ingress`
+- Action: `Allow`
+- Targets: `All instances in the network`
+- Source IP ranges: `0.0.0.0/0`
+- Protocols and ports: `tcp:80`
+
+---
+
+## 🟢 Автозапуск pgAdmin и Apache
+
+Apache запускается автоматически вместе с системой:
+
+```bash
+sudo systemctl enable apache2
+```
+
+---
+
+## 🧠 Проверка
+
+Открой в браузере:
+
+```
+http://<твой-сервер>/pgadmin4
+```
+
+Введи логин/пароль, указанный при `setup-web.sh`, и начни использовать pgAdmin 4.
+
+---
+
+## 📌 Где хранятся данные?
+
+- Конфигурация: `/usr/pgadmin4/`
+- Apache site config: `/etc/apache2/conf-available/pgadmin4.conf`
+- База настроек: `~/.pgadmin`
+
+---
