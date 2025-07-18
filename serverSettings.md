@@ -87,3 +87,8 @@ sudo systemctl start filebrowser
 Проверяем 
 
 sudo systemctl status filebrowser
+
+# КАК УЗНАТЬ ЛОГИН И ПАРОЛЬ ОТ АДМИН-ПАНЕЛИ ДИРЕКТОРИИ?
+
+journalctl -u filebrowser.service --no-pager | grep "User 'admin' initialized"
+
