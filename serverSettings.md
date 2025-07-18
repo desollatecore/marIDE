@@ -41,6 +41,12 @@ which filebrowser - покажет путь, где находиться.
 
 sudo nano /etc/systemd/system/filebrowser.service
 
+sudo mkdir -p /srv/filebrowser
+
+sudo chown -R desollatecore /srv/filebrowser
+
+P.S Вместо desollatecore ваш uname
+
 ---
 
 [ТЕКСТОВЫЙ РЕДАЕКТОР NANO]
@@ -53,7 +59,9 @@ After=network.target
 
 [Service]
 
-User=desollatecore
+User=desollatecore (Вместо desollatecore ваш uname)
+
+WorkingDirectory=/srv/filebrowser
 
 ExecStart=/usr/local/bin/filebrowser -r /srv/files -p 8080 --address 0.0.0.0
 
@@ -62,6 +70,7 @@ Restart=always
 [Install]
 
 WantedBy=multi-user.target
+
 
 ---
 Активируем и запускаем:
