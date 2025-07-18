@@ -1,94 +1,115 @@
-# marIDE
-
-mar-ide/PLUGIN-FOR-LZT
-
----
-# Создание FILEBROWSER для управление файлами на сервере.
-
-[LINUX TERMINAL]
-
-1.sudo apt update && sudo apt install curl -y
-
-2.curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
-
-3.sudo mkdir -p /srv/files
-
-4.filebrowser -r /srv/files -p 8080 --address 0.0.0.0
+# marIDE  
+**mar-ide/PLUGIN-FOR-LZT**
 
 ---
-# Как узнать какое айпи в АДМИН-МЕНЮ файловой директории 
 
-[LINUX TERMINAL]
+## 📂 Создание FILEBROWSER для управления файлами на сервере (Linux)
 
-curl ifconfig.me
+### 🔧 Установка
 
----
-# Запуск админ панели 
-
-[LINUX TERMINAL]
-
+```bash
+sudo apt update && sudo apt install curl -y
+curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+sudo mkdir -p /srv/files
 filebrowser -r /srv/files -p 8080 --address 0.0.0.0
+```
 
 ---
 
-# Автозапуск Admin-панели Директории 
+### 🌐 Узнать внешний IP сервера
 
-[LINUX TERMINAL]
+```bash
+curl ifconfig.me
+```
 
-which filebrowser - покажет путь, где находиться.
+---
 
-Почти всегда путь будет - /usr/local/bin/filebrowser
+### 🚀 Ручной запуск админ-панели
 
-sudo nano /etc/systemd/system/filebrowser.service
+```bash
+filebrowser -r /srv/files -p 8080 --address 0.0.0.0
+```
 
+---
+
+## ⚙️ Автозапуск FileBrowser через systemd
+
+### 🔍 Узнать путь к бинарнику
+
+```bash
+which filebrowser
+```
+
+Обычно это `/usr/local/bin/filebrowser`
+
+---
+
+### 📁 Подготовка папок
+
+```bash
 sudo mkdir -p /srv/filebrowser
+sudo chown -R <ВАШ_ЮЗЕР> /srv/filebrowser
+```
 
-sudo chown -R desollatecore /srv/filebrowser
-
-P.S Вместо desollatecore ваш uname
+Замените `<ВАШ_ЮЗЕР>` на свой логин, например `desollatecore`.
 
 ---
 
-[ТЕКСТОВЫЙ РЕДАЕКТОР NANO]
+### 📝 Создание systemd сервиса
 
+```bash
+sudo nano /etc/systemd/system/filebrowser.service
+```
+
+Вставьте:
+
+```
 [Unit]
-
 Description=FileBrowser Admin Panel
-
 After=network.target
 
 [Service]
-
-User=desollatecore (Вместо desollatecore ваш uname)
-
+User=<ВАШ_ЮЗЕР>
 WorkingDirectory=/srv/filebrowser
-
 ExecStart=/usr/local/bin/filebrowser -r /srv/files -p 8080 --address 0.0.0.0
-
 Restart=always
 
 [Install]
-
 WantedBy=multi-user.target
-
+```
 
 ---
-Активируем и запускаем:
 
-[LINUX TERMINAL]
+### ✅ Активация сервиса
 
+```bash
 sudo systemctl daemon-reload
-
 sudo systemctl enable filebrowser
-
 sudo systemctl start filebrowser
+```
+
+Проверка:
+
+```bash
+sudo systemctl status filebrowser
+```
 
 ---
-Проверяем 
 
-sudo systemctl status filebrowser
+## 🔐 Как узнать логин и пароль от FileBrowser
 
-# КАК УЗНАТЬ ЛОГИН И ПАРОЛЬ ОТ АДМИН-ПАНЕЛИ ДИРЕКТОРИИ?
-
+```bash
 journalctl -u filebrowser.service --no-pager | grep "User 'admin' initialized"
+```
 
+---
+
+## 🌍 Открыть в браузере
+
+```
+http://<IP_СЕРВЕРА>:8080
+```
+
+Замените `<IP_СЕРВЕРА>` на значение из `curl ifconfig.me`.
+
+---
